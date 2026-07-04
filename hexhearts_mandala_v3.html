@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💜 Hex Hearts — Mandala v3</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #1a001f 0%, #0a0010 100%);
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+  }
+
+  /* Mandala Glow Background */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url('images/mandala_bg.png') center/cover no-repeat,
+                radial-gradient(circle at center, rgba(255,0,255,0.15), rgba(0,0,0,0.9));
+    filter: brightness(0.8) saturate(1.2);
+    z-index: 0;
+  }
+
+  /* Center Containers */
+  .centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative;
+    z-index: 1;
+    flex-direction: column;
+  }
+
+  /* Splash Screen */
+  #splash {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 0, 25, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: #ff59d1;
+    text-shadow: 0 0 15px #ff59d1, 0 0 25px #25f3ff;
+    z-index: 10;
+    cursor: pointer;
+    transition: opacity 0.6s ease;
+    overflow: hidden; /* keeps glowing image inside splash area */
+    animation: fadeIn 1s ease; /* smooth intro */
+  }
+  #splash.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+/* 🎰 Slot Machine Layout */
+#machine {
+  position: relative;
+  background: linear-gradient(180deg, #220033, #080010);
+  border-radius: 20px;
+  box-shadow: 0 0 30px #ff59d188, inset 0 0 15px #25f3ff55;
+  width: 340px;
+  padding: 20px;
+  text-align: center;
+  color: #fff;
+}
+
+#banner {
+  font-size: 1.3em;
+  background: linear-gradient(90deg, #ff59d1, #25f3ff);
+  padding: 8px 0;
+  border-radius: 12px;
+  color: #000;
+  font-weight: bold;
+  text-shadow: 0 0 4px #fff;
+  margin-bottom: 10px;
+}
+
+#reelbox {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: #000;
+  border-radius: 12px;
+  border: 3px solid #25f3ff;
+  box-shadow: inset 0 0 10px #25f3ff88;
+  padding: 8px;
+  height: 120px;
+  margin-bottom: 15px;
+}
+
+.reel {
+  width: 90px;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.reel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.slot img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  margin: 0 5px;
+  border-radius: 10px;
+}
+
+/* 🎞️ Reel spinning visual effect */
+.spinning {
+  filter: brightness(1.4) blur(2px);
+  transform: scale(1.05) rotateX(8deg);
+  transition: filter 0.2s, transform 0.2s;
+}
+/* 🎛 Controls */
+#controls {
+  margin-top: 10px;
+}
+
+#spin {
+  background: linear-gradient(90deg, #25f3ff, #ff59d1);
+  color: #000;
+  font-weight: bold;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px #25f3ff88, inset 0 2px 4px #fff;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s ease;
+}
+
+#spin:active {
+  transform: scale(0.95);
+}
+
+#coins {
+  color: #ff66c4;
+  margin-top: 8px;
+  font-size: 16px;
+  text-shadow: 0 0 6px #25f3ff;
+}
+  #splash h1 {
+    margin-bottom: 20px;
+    font-size: 2.2em;
+  }
+  #splash p {
+    color: #bffcff;
+    font-size: 1.2em;
+  }
+/* Neon Splash */
+.splash-img {
+  width: 85vw;
+  max-width: 420px;
+  border-radius: 16px;
+  box-shadow: 0 0 40px #a000ff, 0 0 80px #00ffff44;
+  animation: glowPulse 5s ease-in-out infinite;
+}
+
+/* Glow & fade animations */
+@keyframes glowPulse {
+  0%,100% { filter: brightness(1); transform: scale(1); }
+  50% { filter: brightness(1.2); transform: scale(1.03); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+}
+  /* Game Container */
+  #game {
+    display: none;
+    text-align: center;
+    max-width: 580px;
+    margin: auto;
+    border-radius: 16px;
+    background: rgba(15, 0, 30, 0.8);
+    box-shadow: 0 0 30px #ff59d1, inset 0 0 20px #25f3ff;
+    padding: 20px;
+    opacity:0;
+    transition: opacity 1s ease;
+  }
+
+  /* Slot machine style */
+  .slot {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    background: #000000aa;
+    border-radius: 12px;
+    border: 3px solid #25f3ff;
+    box-shadow: 0 0 20px #25f3ff inset;
+    overflow: hidden;
+  }
+  .slot img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    margin: 0 5px;
+    border-radius: 10px;
+  }
+
+  /* Spin Button */
+  button {
+    background: linear-gradient(90deg, #25f3ff, #ff59d1);
+    border: none;
+    color: black;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 15px 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #25f3ff;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  button:active {
+    transform: scale(0.96);
+  }
+
+  /* Coins text */
+  .coins {
+    color: gold;
+    font-size: 1.2em;
+    margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Splash Screen -->
+<div id="splash">
+  <img src="images/cover.png" alt="cover" 
+ class="splash-img">
+  <h1>💜 Hex Hearts</h1>
+  <p>💰 Tap to Begin 💎</p>
+</div>
+
+<!-- 🎰 Slot Machine Game Section -->
+<div id="game" class="centered">
+  <div id="machine">
+    <div id="banner">💜 HEX HEARTS JACKPOT 💜</div>
+
+    <!-- Reels -->
+    <div id="reelbox">
+      <div class="reel"><img id="slot1" src="images/1.jpg" alt="slot 1" /></div>
+      <div class="reel"><img id="slot2" src="images/2.jpg" alt="slot 2" /></div>
+      <div class="reel"><img id="slot3" src="images/3.jpg" alt="slot 3" /></div>
+    </div>
+
+    <!-- Lever -->
+    <div id="lever"></div>
+
+    <!-- Controls -->
+    <div id="controls">
+      <button id="spin">SPIN 🎰</button>
+      <div id="coins">💰 Coins: <span id="coinCount">100</span></div>
+    </div>
+  </div>
+</div>
+<!-- Game Section -->
+<div id="game" class="centered">
+  <h2>🎰 Hex Hearts Jackpot</h2>
+
+  <div class="slot" id="slot">
+    <img src="images/1.jpg" alt="slot1">
+    <img src="images/2.jpg" alt="slot2">
+    <img src="images/3.jpg" alt="slot3">
+  </div>
+
+  <button id="spin">SPIN 🎲</button>
+  <div class="coins" id="coins">Coins: 5</div>
+</div>
+
+<script>
+// 🌸 Splash → Game Transition
+const splash = document.getElementById("splash");
+const game = document.getElementById("game");
+
+splash.addEventListener("click", () => {
+  splash.style.transition = "opacity 1s ease";
+  splash.style.opacity = "0";
+  setTimeout(() => {
+    splash.style.display = "none";
+    game.style.display = "flex";
+    game.style.opacity = "0";
+    setTimeout(() => (game.style.opacity = "1"), 100);
+  }, 900);
+});
+// 🎰 Slot Machine Logic
+const spinBtn = document.getElementById("spin");
+const slotImgs = [
+  document.getElementById("slot1"),
+  document.getElementById("slot2"),
+  document.getElementById("slot3")
+];
+const coinCount = document.getElementById("coins");
+let coins = 100;
+
+const reelImgs = [
+  "images/1.jpg",
+  "images/2.jpg",
+  "images/3.jpg",
+  "images/4.jpg",
+  "images/5.jpg",
+  "images/6.jpg",
+  "images/7.jpg",
+  "images/8.jpg",
+  "images/9.jpg",
+  "images/ship_start.png",
+  "images/hex.png"
+];
+
+spinBtn.addEventListener("click", () => {
+  if (coins <= 0) {
+    alert("💔 Out of coins! Refilling...");
+    coins = 100; // refill coins
+    coinCount.textContent = `Coins: ${coins}`;
+    return;
+  }
+
+  coins--;
+  coinCount.textContent = `Coins: ${coins}`;
+
+  // 🎞️ Reel spin animation for each slot
+  slotImgs.forEach((img, i) => {
+    img.classList.add("spinning");
+    let spins = 0;
+    const spinSpeed = 75; // smaller = faster
+    const totalSpins = 15 + i * 5;
+
+    const spinInterval = setInterval(() => {
+      const rand = Math.floor(Math.random() * reelImgs.length);
+      img.src = reelImgs[rand];
+      spins++;
+
+      if (spins >= totalSpins) {
+        clearInterval(spinInterval);
+        img.classList.remove("spinning");
+
+        const finalRand = Math.floor(Math.random() * reelImgs.length);
+        img.src = reelImgs[finalRand];
+
+        // After last reel stops → check jackpot
+        if (i === slotImgs.length - 1) {
+          setTimeout(() => {
+            if (
+              slotImgs[0].src === slotImgs[1].src &&
+              slotImgs[1].src === slotImgs[2].src
+            ) {
+              coins += 30;
+              coinCount.textContent = `Coins: ${coins}`;
+              alert("💎 JACKPOT! +30 coins!");
+            }
+          }, 300);
+        }
+      }
+    }, spinSpeed);
+  });
+});
+</script>
+</body>
+</html>
